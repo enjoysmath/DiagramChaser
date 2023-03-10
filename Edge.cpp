@@ -110,16 +110,20 @@ void Edge::updateLinePath()
 			S = closestPointOnPolygonList(source->edgeConnectBoundary(), S);
 			T = closestPointOnPolygonList(target->edgeConnectBoundary(), T);
 
-			//T = closestPointOnPolygonList(target->edgeConnectBoundary(), source->mapToItem(target, S1));
-			//S = closestPointOnPolygonList(source->edgeConnectBoundary(), target->mapToItem(source, T1));
-
 			points[0] = mapFromItem(source, S);
 			points[3] = mapFromItem(target, T);
 		}
 	}
 	else if (source != nullptr && target == nullptr)
 	{
-		auto T = mapToItem(source, endPoint(Target)->pos());
+		QPointF T;
+		
+		if (!_bezier)
+			T = endPoint(Target)->pos();
+		else
+			T = _points[1]->pos();
+
+		T = mapToItem(source, T);
 		auto S = closestPointOnPolygonList(source->edgeConnectBoundary(), T);
 
 		points[0] = mapFromItem(source, S);
@@ -127,7 +131,14 @@ void Edge::updateLinePath()
 	}
 	else if (source == nullptr && target != nullptr)
 	{
-		auto S = mapToItem(target, endPoint(Source)->pos());
+		QPointF S;
+
+		if (!_bezier)
+			S = endPoint(Source)->pos();
+		else
+			S = _points[2]->pos();
+
+		S = mapToItem(target, S);
 		auto T = closestPointOnPolygonList(target->edgeConnectBoundary(), S);
 
 		points[0] = endPoint(Source)->pos();
